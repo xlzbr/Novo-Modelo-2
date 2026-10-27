@@ -15,6 +15,7 @@ import { TaskDetailModal } from './components/TaskDetailModal';
 import { CopilotModal } from './components/CopilotModal';
 import { FoliumLogo } from './components/FoliumLogo';
 import { CampusMapModal } from './components/CampusMapModal';
+import { ErrorBoundary } from './components/ErrorBoundary';
 
 import { DashboardView } from './views/DashboardView';
 import { TasksView } from './views/TasksView';
@@ -230,21 +231,23 @@ const MainContent: React.FC = () => {
         <Header title={title} subtitle={subtitle} />
 
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 pb-24 md:pb-8">
-          {activeView === 'dashboard' && (
-            <DashboardView onOpenTaskDetail={(task) => setSelectedTaskForDetail(task)} />
-          )}
-          {activeView === 'tasks' && (
-            <TasksView onOpenDetails={(task) => setSelectedTaskForDetail(task)} />
-          )}
-          {activeView === 'schedule' && <ScheduleView />}
-          {activeView === 'calendar' && <CalendarView />}
-          {activeView === 'disciplines' && <DisciplinesView />}
-          {activeView === 'progress' && <ProgressView />}
-          {activeView === 'materials' && <MaterialsView />}
-          {activeView === 'notices' && <NoticesView />}
-          {activeView === 'profile' && <ProfileView />}
-          {activeView === 'settings' && <SettingsView />}
-          {activeView === 'campus-map' && <CampusMapView />}
+          <ErrorBoundary>
+            {activeView === 'dashboard' && (
+              <DashboardView onOpenTaskDetail={(task) => setSelectedTaskForDetail(task)} />
+            )}
+            {activeView === 'tasks' && (
+              <TasksView onOpenDetails={(task) => setSelectedTaskForDetail(task)} />
+            )}
+            {activeView === 'schedule' && <ScheduleView />}
+            {activeView === 'calendar' && <CalendarView />}
+            {activeView === 'disciplines' && <DisciplinesView />}
+            {activeView === 'progress' && <ProgressView />}
+            {activeView === 'materials' && <MaterialsView />}
+            {activeView === 'notices' && <NoticesView />}
+            {activeView === 'profile' && <ProfileView />}
+            {activeView === 'settings' && <SettingsView />}
+            {activeView === 'campus-map' && <CampusMapView />}
+          </ErrorBoundary>
         </main>
       </div>
 

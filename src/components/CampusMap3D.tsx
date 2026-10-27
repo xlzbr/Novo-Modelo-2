@@ -232,18 +232,26 @@ export const CampusMap3D: React.FC<CampusMap3DProps> = ({
     updateCamFromSpherical(1.0);
 
     // Renderer
-    const renderer = new THREE.WebGLRenderer({
-      antialias: true,
-      powerPreference: 'high-performance',
-      alpha: false,
-    });
-    renderer.setSize(width, height);
-    renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
-    renderer.toneMapping = THREE.ACESFilmicToneMapping;
-    renderer.toneMappingExposure = 1.08;
-    renderer.shadowMap.enabled = true;
-    renderer.shadowMap.type = THREE.PCFSoftShadowMap;
-    container.appendChild(renderer.domElement);
+    let renderer: THREE.WebGLRenderer;
+    try {
+      renderer = new THREE.WebGLRenderer({
+        antialias: true,
+        powerPreference: 'high-performance',
+        alpha: false,
+      });
+      renderer.setSize(width, height);
+      renderer.setPixelRatio(Math.min(window.devicePixelRatio, 2));
+      renderer.toneMapping = THREE.ACESFilmicToneMapping;
+      renderer.toneMappingExposure = 1.08;
+      renderer.shadowMap.enabled = true;
+      renderer.shadowMap.type = THREE.PCFSoftShadowMap;
+      container.innerHTML = '';
+      container.appendChild(renderer.domElement);
+    } catch (err) {
+      console.warn('WebGL initialization failed in CampusMap3D:', err);
+      setWebGlAvailable(false);
+      return;
+    }
 
     // Shared Palette & Materials
     const palette = {
@@ -1261,6 +1269,7 @@ export const CampusMap3D: React.FC<CampusMap3DProps> = ({
     let hasMovedSignificantly = false;
 
     const onPointerDown = (e: MouseEvent | TouchEvent) => {
+      if ('touches' in e && (!e.touches || e.touches.length === 0)) return;
       isPointerDown = true;
       hasMovedSignificantly = false;
 
@@ -1268,7 +1277,7 @@ export const CampusMap3D: React.FC<CampusMap3DProps> = ({
         if (e.touches.length === 1) {
           prevPointerX = e.touches[0].clientX;
           prevPointerY = e.touches[0].clientY;
-        } else if (e.touches.length === 2) {
+        } else if (e.touches.length >= 2) {
           touchStartDistance = Math.hypot(
             e.touches[0].clientX - e.touches[1].clientX,
             e.touches[0].clientY - e.touches[1].clientY
@@ -1282,6 +1291,7 @@ export const CampusMap3D: React.FC<CampusMap3DProps> = ({
     };
 
     const onPointerMove = (e: MouseEvent | TouchEvent) => {
+      if ('touches' in e && (!e.touches || e.touches.length === 0)) return;
       const rect = renderer.domElement.getBoundingClientRect();
       const clientX = 'touches' in e ? e.touches[0].clientX : e.clientX;
       const clientY = 'touches' in e ? e.touches[0].clientY : e.clientY;
@@ -1290,7 +1300,7 @@ export const CampusMap3D: React.FC<CampusMap3DProps> = ({
       mouse.y = -((clientY - rect.top) / rect.height) * 2 + 1;
 
       // Two-finger Pinch Zoom (Mobile)
-      if ('touches' in e && e.touches.length === 2) {
+      if ('touches' in e && e.touches.length >= 2) {
         const dist = Math.hypot(
           e.touches[0].clientX - e.touches[1].clientX,
           e.touches[0].clientY - e.touches[1].clientY
