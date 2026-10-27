@@ -1,0 +1,6 @@
+{
+  "name": "EduConnect",
+  "description": "Plataforma acadêmica independente para organização de tarefas, agenda diária de estudos e acompanhamento de metas.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
